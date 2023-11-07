@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.7)
 
 project(Game-of-Life VERSION 1.0)
 
+option(WASM, "Compile to Wasm" OFF)
+
+if(WASM)
+
+endif()
+
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 

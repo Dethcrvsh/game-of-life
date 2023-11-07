@@ -1,43 +1,47 @@
-#include <SDL.h>
+#include "graphics/graphics_handler.h"
+#include <iostream>
+#include <unistd.h>
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
-int main( int argc, char* args[] )
-{
-    //The window we'll be rendering to
-    SDL_Window* window = NULL;
-    
-    //The surface contained by the window
-    SDL_Surface* screenSurface = NULL;
+const int MAX_FPS = 30;
 
-    //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-    {
-        printf( "SDL could not initialize! SDL_Error: %s\n", SDL_GetError() );
-    }
-   else
-    {
-        //Create window
-        window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-        if( window == NULL )
-        {
-            printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
-        }
-         else
-        {
-            //Get window surface
-            screenSurface = SDL_GetWindowSurface( window );
+GraphicsHandler* graphics_handler;
 
-            //Fill the surface white
-            SDL_FillRect( screenSurface, NULL, SDL_MapRGB( screenSurface->format, 0xFF, 0xFF, 0xFF ) );
-            
-            //Update the surface
-            SDL_UpdateWindowSurface( window );
+void handle_events() {
+    SDL_Event ev;
 
-            //Hack to get window to stay up
-            SDL_Event e; bool quit = false; while( quit == false ){ while( SDL_PollEvent( &e ) ){ if( e.type == SDL_QUIT ) quit = true; } }
+    while(SDL_PollEvent(&ev) != 0) {
+        switch(ev.type) {
+            case SDL_QUIT:
+                exit(0);
         }
     }
+}
+
+void loop() {
+    Uint64 start_time = SDL_GetPerformanceCounter();
+
+    handle_events();
+
+    graphics_handler->draw_frame();
+
+    Uint64 end_time = SDL_GetPerformanceCounter();
+    float elapsed_time_ms = (end_time - start_time) / (float) SDL_GetPerformanceFrequency() * 1000.0f;
+    // Cap the FPS
+    SDL_Delay(floor((1.0f / MAX_FPS) * 1000.0f - elapsed_time_ms));
+}
+
+int main() {
+    graphics_handler = new GraphicsHandler();
+
+    #ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(loop, 0, 1);
+    #else
+    while(true) {
+        loop();
+    }
+    #endif
 }
