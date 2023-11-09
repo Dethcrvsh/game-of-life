@@ -3,8 +3,10 @@
 #include <bitset>
 #include <vector>
 
+#include "key_listener.h"
 
-class Board {
+
+class Board : public KeyListener {
 public:
     Board();
 
@@ -15,10 +17,11 @@ public:
     void toggle_cell(int x, int y);
     void evolve();
     void print() const;
+    void on_key_event(SDL_Event &event) override;
 
 private:
-    static const int WIDTH = 10;
-    static const int HEIGHT = 10;
+    static const int WIDTH = 64;
+    static const int HEIGHT = 64;
 
     std::bitset<WIDTH * HEIGHT>* grid; 
     std::vector<std::bitset<WIDTH * HEIGHT>> history;

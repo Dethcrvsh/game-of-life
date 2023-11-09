@@ -15,15 +15,15 @@ public:
     void draw_frame();
 private:
     //Screen dimension constants
-    static const int WINDOW_WIDTH = 640;
-    static const int WINDOW_HEIGHT = 480;
+    static const int WINDOW_WIDTH = 640 * 2;
+    static const int WINDOW_HEIGHT = 480 * 2;
 
     static constexpr const char* WINDOW_TITLE = "Game of Life";
 
     struct BackgroundColor {
-        int r = 0;
-        int g = 0;
-        int b = 0;
+        int r = 241;
+        int g = 234;
+        int b = 255;
     } BG_COLOR;
 
     //The window we'll be rendering to

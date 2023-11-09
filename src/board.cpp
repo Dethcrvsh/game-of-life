@@ -7,12 +7,14 @@ Board::Board() {
     history.push_back(std::bitset<WIDTH * HEIGHT>());
     grid = &history.back();
 
+    KeyListener::register_listener(this);
+
     toggle_cell(2, 3);
     toggle_cell(3, 3);
     toggle_cell(4, 3);
-    print();
-    evolve();
-    print();
+    toggle_cell(5, 7);
+    toggle_cell(6, 7);
+    toggle_cell(8, 3);
 }
 
 int Board::get_width() const { return WIDTH; }
@@ -83,4 +85,17 @@ int Board::get_living_neighbours(int x, int y) {
     }
 
     return alive_count;
+}
+
+void Board::on_key_event(SDL_Event &event) {
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
+        evolve();
+    }
+
+    // TODO: Remove
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
+        grid = &history[history.size() - 1];
+        history.pop_back();
+        std::cout << history.size() << std::endl;
+    }
 }

@@ -10,7 +10,7 @@
 #include <emscripten.h>
 #endif
 
-const int MAX_FPS = 30;
+const int MAX_FPS = 60;
 
 GraphicsHandler* graphics_handler;
 Board* board;
@@ -38,7 +38,12 @@ void loop() {
     Uint64 end_time = SDL_GetPerformanceCounter();
     float elapsed_time_ms = (end_time - start_time) / (float) SDL_GetPerformanceFrequency() * 1000.0f;
     // Cap the FPS
-    SDL_Delay(floor((1.0f / MAX_FPS) * 1000.0f - elapsed_time_ms));
+
+    float delay = (1.0f / MAX_FPS) * 1000.0f - elapsed_time_ms;
+
+    if (delay > 0) {
+        SDL_Delay(floor((1.0f / MAX_FPS) * 1000.0f - elapsed_time_ms));
+    }
 }
 
 int main() {

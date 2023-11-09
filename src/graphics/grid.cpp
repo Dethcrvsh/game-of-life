@@ -2,6 +2,11 @@
 #include <iostream>
 
 
+Grid::Grid(SDL_Renderer* renderer, Board* board) : ScreenEntity(renderer), board(board) {
+    width = board->get_width();
+    height = board->get_height();
+}
+
 void Grid::draw() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -15,19 +20,30 @@ void Grid::draw() {
 
             };
             SDL_Rect cell = {
-                x * (CELL_WIDTH + zoom) + 5 + x_offset,
-                y * (CELL_HEIGHT + zoom) + 5 + y_offset,
-                CELL_WIDTH - 10 + zoom,
-                CELL_HEIGHT - 10 + zoom
+                x * (CELL_WIDTH + zoom) + 2 + x_offset,
+                y * (CELL_HEIGHT + zoom) + 2 + y_offset,
+                CELL_WIDTH + zoom - 4,
+                CELL_HEIGHT + zoom - 4
             };
 
+            SDL_SetRenderDrawColor(renderer, 208, 162, 247, 0);
             SDL_RenderDrawRect(renderer, &outline);
 
+            if (!board->is_cell_alive(x, y)) {
+                continue;
+            }
+
+            SDL_SetRenderDrawColor(renderer, 91, 8, 136, 0);
             SDL_RenderFillRect(renderer, &cell);
         }
     }
+}
 
-    //y_offset += 5;
+Grid::Coordinates Grid::grid_to_board(const int x, const int y) const {
+    return {
+        (x - x_offset) / (CELL_WIDTH + zoom),
+        (y - y_offset) / (CELL_HEIGHT + zoom)
+    };
 }
 
 void Grid::on_key_event(SDL_Event &event) {
@@ -42,11 +58,25 @@ void Grid::on_key_event(SDL_Event &event) {
         }
     }
 
-    if (event.motion.state & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        if (abs(event.motion.xrel) > 25 || abs(event.motion.yrel) > 25) {
-            return;
+    // Bitmask out the correct mouse button
+    if (event.motion.state & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+        if (abs(event.motion.xrel) < 25 && abs(event.motion.yrel) < 25) {
+            x_offset += event.motion.xrel;
+            y_offset += event.motion.yrel;
         }
-        x_offset += event.motion.xrel;
-        y_offset += event.motion.yrel;
+    }
+
+    if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
+        // Get mouse coordinates
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+
+        Coordinates c = grid_to_board(mouseX, mouseY);
+
+        board->toggle_cell(c.x, c.y);
+    }
+
+    if (event.type == SDL_MOUSEWHEEL) {
+        zoom += event.wheel.y * ZOOM_SENSITIVITY;
     }
 }
