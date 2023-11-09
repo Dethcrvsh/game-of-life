@@ -1,6 +1,10 @@
 #include "graphics/graphics_handler.h"
+#include "graphics/screen_entity.h"
+#include "graphics/grid.h"
+#include "key_listener.h"
+#include "board.h"
+#include <vector>
 #include <iostream>
-#include <unistd.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -9,14 +13,19 @@
 const int MAX_FPS = 30;
 
 GraphicsHandler* graphics_handler;
+Board* board;
+
 
 void handle_events() {
     SDL_Event ev;
 
     while(SDL_PollEvent(&ev) != 0) {
-        switch(ev.type) {
-            case SDL_QUIT:
-                exit(0);
+        KeyListener::notify_listeners(ev);
+        graphics_handler->draw_frame();
+
+
+        if (ev.type == SDL_QUIT) {
+            exit(0);
         }
     }
 }
@@ -26,8 +35,6 @@ void loop() {
 
     handle_events();
 
-    graphics_handler->draw_frame();
-
     Uint64 end_time = SDL_GetPerformanceCounter();
     float elapsed_time_ms = (end_time - start_time) / (float) SDL_GetPerformanceFrequency() * 1000.0f;
     // Cap the FPS
@@ -35,7 +42,8 @@ void loop() {
 }
 
 int main() {
-    graphics_handler = new GraphicsHandler();
+    board = new Board();
+    graphics_handler = new GraphicsHandler(board);
 
     #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(loop, 0, 1);

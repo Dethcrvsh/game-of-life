@@ -13,7 +13,7 @@ class ScreenEntity {
 public:
     ScreenEntity(SDL_Renderer* renderer) : renderer(renderer) {};
 
-    virtual void draw() const = 0;
+    virtual void draw() = 0;
 
 protected:
     SDL_Renderer* renderer;

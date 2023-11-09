@@ -1,8 +1,9 @@
 #include "graphics_handler.h"
 #include "grid.h"
 #include "screen_entity.h"
+#include "../key_listener.h"
 
-GraphicsHandler::GraphicsHandler() {
+GraphicsHandler::GraphicsHandler(Board* board) {
     SDL_Init(SDL_INIT_EVERYTHING);    
 
     window = SDL_CreateWindow(
@@ -16,7 +17,9 @@ GraphicsHandler::GraphicsHandler() {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    screen_entities.push_back(new Grid(renderer));
+    Grid* grid = new Grid(renderer, board->get_width(), board->get_height());
+    screen_entities.push_back(grid);
+    KeyListener::register_listener(grid);
 }
 
 GraphicsHandler::~GraphicsHandler() {
