@@ -2,7 +2,8 @@
 #include <iostream>
 
 
-Grid::Grid(SDL_Renderer* renderer, Board* board) : ScreenEntity(renderer), board(board) {
+Grid::Grid(SDL_Renderer* renderer, Board* board, int screen_width, int screen_height) :
+ScreenEntity(renderer), board(board), screen_width(screen_width), screen_height(screen_height) {
     width = board->get_width();
     height = board->get_height();
 }
@@ -20,20 +21,20 @@ void Grid::draw() {
 
             };
             SDL_Rect cell = {
-                x * (CELL_WIDTH + zoom) + 2 + x_offset,
-                y * (CELL_HEIGHT + zoom) + 2 + y_offset,
-                CELL_WIDTH + zoom - 4,
-                CELL_HEIGHT + zoom - 4
+                x * (CELL_WIDTH + zoom) + CELL_PADDING + x_offset,
+                y * (CELL_HEIGHT + zoom) + CELL_PADDING + y_offset,
+                CELL_WIDTH + zoom - 2 * CELL_PADDING,
+                CELL_HEIGHT + zoom - 2 * CELL_PADDING
             };
 
-            SDL_SetRenderDrawColor(renderer, 208, 162, 247, 0);
+            SDL_SetRenderDrawColor(renderer, OUTLINE_COLOR.r, OUTLINE_COLOR.g, OUTLINE_COLOR.b, OUTLINE_COLOR.a);
             SDL_RenderDrawRect(renderer, &outline);
 
             if (!board->is_cell_alive(x, y)) {
                 continue;
             }
 
-            SDL_SetRenderDrawColor(renderer, 91, 8, 136, 0);
+            SDL_SetRenderDrawColor(renderer, CELL_COLOR.r, CELL_COLOR.g, CELL_COLOR.b, CELL_COLOR.a);
             SDL_RenderFillRect(renderer, &cell);
         }
     }

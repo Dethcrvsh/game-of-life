@@ -17,7 +17,7 @@ GraphicsHandler::GraphicsHandler(Board* board) {
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    Grid* grid = new Grid(renderer, board);
+    Grid* grid = new Grid(renderer, board, WINDOW_WIDTH, WINDOW_HEIGHT);
     screen_entities.push_back(grid);
     KeyListener::register_listener(grid);
 }
@@ -27,7 +27,7 @@ GraphicsHandler::~GraphicsHandler() {
     SDL_Quit();
 }
 
-void GraphicsHandler::draw_frame() {
+void GraphicsHandler::draw_frame() const {
     SDL_SetRenderDrawColor(renderer, BG_COLOR.r, BG_COLOR.g, BG_COLOR.b, 0);
     SDL_RenderClear(renderer);
 

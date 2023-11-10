@@ -92,10 +92,10 @@ void Board::on_key_event(SDL_Event &event) {
         evolve();
     }
 
-    // TODO: Remove
     if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_DOWN) {
-        grid = &history[history.size() - 1];
-        history.pop_back();
-        std::cout << history.size() << std::endl;
+        if (history.size() > 0 ) {
+            grid = &history[history.size() - 1];
+            history.pop_back();
+        }
     }
 }

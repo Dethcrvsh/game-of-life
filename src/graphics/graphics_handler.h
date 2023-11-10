@@ -12,7 +12,7 @@ public:
     ~GraphicsHandler();
 
     // Draw the next frame
-    void draw_frame();
+    void draw_frame() const;
 private:
     //Screen dimension constants
     static const int WINDOW_WIDTH = 640 * 2;
@@ -20,11 +20,7 @@ private:
 
     static constexpr const char* WINDOW_TITLE = "Game of Life";
 
-    struct BackgroundColor {
-        int r = 241;
-        int g = 234;
-        int b = 255;
-    } BG_COLOR;
+    SDL_Color BG_COLOR = {241, 234, 255, 1};
 
     //The window we'll be rendering to
     SDL_Window* window;
